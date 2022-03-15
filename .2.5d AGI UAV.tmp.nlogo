@@ -69,13 +69,14 @@ to setup
     ; initial heights are randomly distributed
     set height random-normal 2 .1
     set perc_accuracy random 100
+    set Kill_accuracy random 100
     set stem-color blue set color blue set size 2
     set has_target 0
   ]
 
   create-Enemies num_Enemies [
     set destroyed 0
-    move-to one-of patches with [ pxcor < 22 and pycor > 22 ]
+    move-to one-of patches ;;with [ pxcor < 22 and pycor > 22 ]
     set height 0.1
     set color red set stem-color color
     set shape "square"
@@ -122,20 +123,20 @@ to go
     ;; move towards target.  once the distance is less than 1,
     ;; use move-to to land exactly on the target.
     if has_target = 1 [ face target ]
-    if distance target < .5 and member? target enemies a;; and kill swith is on
+    if perc_Accuracy > PAccuracy and  distance target < 1 and member? target enemies ;; and kill switch is on
     [ move-to target ask target [ set destroyed 1 fd 0 set color yellow set shape "star"] set has_target 0 ask my-links [ die ] ]
-    if count enemies with [ destroyed = 0 ] < 1 [ set heading heading + random 15 - random 15 fd speed set height 2 + random-normal 0.3 0.1 - random-normal 0.3 0.1
-      ask my-links [ die ]  ]
+    if count enemies with [ destroyed = 0 ] < 1 [ set heading heading + random 15 - random 15 fd speed set
+      height 2 + random-normal 0.3 0.1 - random-normal 0.3 0.1 set has_target 0 ask my-links [ die ]  ]
     fd random-float speed
 ]
 
   if count enemies > 1 [
     ask Enemies with [ color = red ]  [
     ; turtles move randomly
-      face one-of Assets fd Enemy_speed
+      rt random 90 lt random 90 fd Enemy_speed
       invade
   ]]
-   ask one-of enemies [ hatch 1 ]
+   ask one-of enemies [ hatch 1 fd 1 ]
 
   ;;wait .1
   ; changes in turtle view related variables only become visible when the view is updated
@@ -449,11 +450,26 @@ SLIDER
 289
 967
 322
-Accuracy
-Accuracy
+KAccuracy
+KAccuracy
 0
 100
-50.0
+0.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+795
+330
+967
+363
+PAccuracy
+PAccuracy
+0
+100
+20.0
 1
 1
 NIL
