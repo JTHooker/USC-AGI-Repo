@@ -68,12 +68,11 @@ to setup
     move-to one-of patches
     ; initial heights are randomly distributed
     set height random-normal 2 .1
-    ; The full scale of the color sky goes from 90 to 99.9
-    ; This code randomly distributes sky colors, cutting out
-    ; the darkest shades of sky which are near black
+    set perc_accuracy random 100
     set stem-color blue set color blue set size 2
     set has_target 0
   ]
+
   create-Enemies num_Enemies [
     set destroyed 0
     move-to one-of patches with [ pxcor < 22 and pycor > 22 ]
@@ -96,7 +95,7 @@ to setup
     set destroyed 0
     set color white
     set height random-normal 1 .3
-    set shape "pyramid"
+    set shape "triangle"
     set size 2
     move-to one-of patches
   ]
@@ -123,7 +122,7 @@ to go
     ;; move towards target.  once the distance is less than 1,
     ;; use move-to to land exactly on the target.
     if has_target = 1 [ face target ]
-    if distance target < .5 and member? target enemies ;; and kill swith is on
+    if distance target < .5 and member? target enemies and Perc_Accuracy < random Accuracy;; and kill swith is on
     [ move-to target ask target [ set destroyed 1 fd 0 set color yellow set shape "star"] set has_target 0 ask my-links [ die ] ]
     if count enemies with [ destroyed = 0 ] < 1 [ set heading heading + random 15 - random 15 fd speed set height 2 + random-normal 0.3 0.1 - random-normal 0.3 0.1
       ask my-links [ die ]  ]
@@ -236,8 +235,8 @@ end
 GRAPHICS-WINDOW
 220
 10
-717
-508
+766
+557
 -1
 -1
 10.55
@@ -346,10 +345,10 @@ NIL
 HORIZONTAL
 
 MONITOR
-860
-91
-1033
-137
+795
+70
+968
+115
 Max Scaled Turtle Height
 max [ height ] of turtles * z-scale
 2
@@ -357,10 +356,10 @@ max [ height ] of turtles * z-scale
 11
 
 MONITOR
-860
-138
-1033
-184
+795
+117
+968
+162
 Min Scaled Turtle Height
 min [ height ] of turtles * z-scale
 2
@@ -368,10 +367,10 @@ min [ height ] of turtles * z-scale
 11
 
 MONITOR
-860
-184
-1032
-229
+795
+163
+967
+208
 Mean Scaled Turtle Height
 mean [ height ] of turtles * z-scale
 2
@@ -405,10 +404,10 @@ count enemies with [ color = red ]
 11
 
 SLIDER
-860
-230
-1033
-264
+795
+209
+968
+242
 Speed
 Speed
 0
@@ -420,10 +419,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-860
-266
-1032
-299
+795
+245
+967
+278
 Enemy_Speed
 Enemy_Speed
 0
@@ -444,6 +443,21 @@ count patches with [ pcolor = black ] / count patches * 100
 1
 1
 11
+
+SLIDER
+795
+289
+967
+322
+Accuracy
+Accuracy
+0
+100
+54.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
