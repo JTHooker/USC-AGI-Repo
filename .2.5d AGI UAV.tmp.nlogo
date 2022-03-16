@@ -46,6 +46,7 @@ Enemies-own [
   damage
   threat
   destroyed
+  evasion
 ]
 
 Putins-own [
@@ -79,8 +80,9 @@ to setup
     move-to one-of patches ;;with [ pxcor < 22 and pycor > 22 ]
     set height 0.1
     set color red set stem-color color
-    set shape "square"
+    set shape "circle"
     set damage 0
+    set evasion random 100
   ]
 
   create-Assets 1 [
@@ -123,10 +125,11 @@ to go
     ;; move towards target.  once the distance is less than 1,
     ;; use move-to to land exactly on the target.
     if has_target = 1 [ face target ]
-    if perc_Accuracy > PAccuracy and  distance target < 1 and member? target enemies ;; and kill switch is on
+    if perc_Accuracy < random PAccuracy and kill_Accuracy < random KAccuracy and distance target < 1 and member? target enemies ;; and kill switch is on
     [ move-to target ask target [ set destroyed 1 fd 0 set color yellow set shape "star"] set has_target 0 ask my-links [ die ] ]
     if count enemies with [ destroyed = 0 ] < 1 [ set heading heading + random 15 - random 15 fd speed set
       height 2 + random-normal 0.3 0.1 - random-normal 0.3 0.1 set has_target 0 ask my-links [ die ]  ]
+    if [ destroyed ] of target = 1 [ set has_target 0 set target one-of enemies with [ destroyed = 0 ] ]
     fd random-float speed
 ]
 
@@ -134,6 +137,7 @@ to go
     ask Enemies with [ color = red ]  [
     ; turtles move randomly
       rt random 90 lt random 90 fd Enemy_speed
+      if any? UAVs-here wand evasion > random EAbility [ move-to one-of patches ]
       invade
   ]]
    ask one-of enemies [ hatch 1 fd 1 ]
@@ -339,7 +343,7 @@ num-UAVs
 num-UAVs
 1
 100
-25.0
+100.0
 1
 1
 NIL
@@ -387,7 +391,7 @@ num_Enemies
 num_Enemies
 0
 100
-40.0
+39.0
 1
 1
 NIL
@@ -413,7 +417,7 @@ Speed
 Speed
 0
 2
-0.33
+1.27
 .01
 1
 NIL
@@ -454,7 +458,7 @@ KAccuracy
 KAccuracy
 0
 100
-0.0
+87.0
 1
 1
 NIL
@@ -469,7 +473,22 @@ PAccuracy
 PAccuracy
 0
 100
-20.0
+89.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+795
+370
+967
+403
+EAbility
+EAbility
+0
+100
+0.0
 1
 1
 NIL
