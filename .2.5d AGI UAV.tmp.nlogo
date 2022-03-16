@@ -28,6 +28,7 @@ UAVs-own [
   kill_accuracy
   has_target
   target
+  pload
 ]
 
 Commanders-own [
@@ -73,6 +74,7 @@ to setup
     set Kill_accuracy random 100
     set stem-color blue set color blue set size 2
     set has_target 0
+    set pload Payload
   ]
 
   create-Enemies num_Enemies [
@@ -126,18 +128,19 @@ to go
     ;; use move-to to land exactly on the target.
     if has_target = 1 [ face target ]
     if perc_Accuracy < random PAccuracy and kill_Accuracy < random KAccuracy and distance target < 1 and member? target enemies ;; and kill switch is on
-    [ move-to target ask target [ set destroyed 1 fd 0 set color yellow set shape "star"] set has_target 0 ask my-links [ die ] ]
+    [ move-to target ask target [ set destroyed 1 fd 0 set color yellow set shape "star"] set has_target 0 ask my-links [ die ] set pload pload - 1]
     if count enemies with [ destroyed = 0 ] < 1 [ set heading heading + random 15 - random 15 fd speed set
       height 2 + random-normal 0.3 0.1 - random-normal 0.3 0.1 set has_target 0 ask my-links [ die ]  ]
-    if [ destroyed ] of target = 1 [ set has_target 0 set target one-of enemies with [ destroyed = 0 ] ]
+    if [ destroyed ] of target = 1 and count enemies with [ destroyed = 0 ] > 1 [ set has_target 0 set target one-of enemies with [ destroyed = 0 ] ]
     fd random-float speed
+    if pload = 0 [ die ]
 ]
 
   if count enemies > 1 [
     ask Enemies with [ color = red ]  [
     ; turtles move randomly
       rt random 90 lt random 90 fd Enemy_speed
-      if any? UAVs-here wand evasion > random EAbility [ move-to one-of patches ]
+      if any? UAVs-here with [ target = myself ] and evasion > random EAbility [ move-to one-of patches ]
       invade
   ]]
    ask one-of enemies [ hatch 1 fd 1 ]
@@ -264,6 +267,17 @@ GRAPHICS-WINDOW
 ticks
 30.0
 
+MONITOR
+0
+0
+0
+0
+NIL
+NIL
+17
+1
+11
+
 BUTTON
 10
 10
@@ -315,7 +329,7 @@ CHOOSER
 link-color
 link-color
 "red" "green" "blue" "yellow"
-2
+0
 
 BUTTON
 10
@@ -458,7 +472,7 @@ KAccuracy
 KAccuracy
 0
 100
-87.0
+100.0
 1
 1
 NIL
@@ -473,7 +487,7 @@ PAccuracy
 PAccuracy
 0
 100
-89.0
+100.0
 1
 1
 NIL
@@ -489,6 +503,21 @@ EAbility
 0
 100
 0.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+795
+405
+967
+438
+Payload
+Payload
+0
+100
+5.0
 1
 1
 NIL

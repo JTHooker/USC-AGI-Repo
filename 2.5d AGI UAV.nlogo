@@ -28,6 +28,7 @@ UAVs-own [
   kill_accuracy
   has_target
   target
+  pload
 ]
 
 Commanders-own [
@@ -73,6 +74,7 @@ to setup
     set Kill_accuracy random 100
     set stem-color blue set color blue set size 2
     set has_target 0
+    set pload Payload
   ]
 
   create-Enemies num_Enemies [
@@ -126,11 +128,12 @@ to go
     ;; use move-to to land exactly on the target.
     if has_target = 1 [ face target ]
     if perc_Accuracy < random PAccuracy and kill_Accuracy < random KAccuracy and distance target < 1 and member? target enemies ;; and kill switch is on
-    [ move-to target ask target [ set destroyed 1 fd 0 set color yellow set shape "star"] set has_target 0 ask my-links [ die ] ]
+    [ move-to target ask target [ set destroyed 1 fd 0 set color yellow set shape "star"] set has_target 0 ask my-links [ die ] set pload pload - 1]
     if count enemies with [ destroyed = 0 ] < 1 [ set heading heading + random 15 - random 15 fd speed set
       height 2 + random-normal 0.3 0.1 - random-normal 0.3 0.1 set has_target 0 ask my-links [ die ]  ]
-    if [ destroyed ] of target = 1 [ set has_target 0 set target one-of enemies with [ destroyed = 0 ] ]
+    if [ destroyed ] of target = 1 and count enemies with [ destroyed = 0 ] > 1 [ set has_target 0 set target one-of enemies with [ destroyed = 0 ] ]
     fd random-float speed
+    if pload = 0 [ die ]
 ]
 
   if count enemies > 1 [
@@ -335,10 +338,10 @@ NIL
 0
 
 SLIDER
-15
-245
-187
-278
+20
+140
+192
+173
 num-UAVs
 num-UAVs
 1
@@ -398,10 +401,10 @@ NIL
 HORIZONTAL
 
 MONITOR
-50
-160
-137
-205
+85
+175
+172
+220
 Enemy Forces
 count enemies with [ color = red ]
 0
@@ -458,7 +461,7 @@ KAccuracy
 KAccuracy
 0
 100
-87.0
+100.0
 1
 1
 NIL
@@ -473,7 +476,7 @@ PAccuracy
 PAccuracy
 0
 100
-89.0
+100.0
 1
 1
 NIL
@@ -488,11 +491,37 @@ EAbility
 EAbility
 0
 100
-0.0
+100.0
 1
 1
 NIL
 HORIZONTAL
+
+SLIDER
+795
+405
+967
+438
+Payload
+Payload
+0
+100
+5.0
+1
+1
+NIL
+HORIZONTAL
+
+MONITOR
+20
+175
+77
+220
+UAVs
+count UAVs
+0
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
